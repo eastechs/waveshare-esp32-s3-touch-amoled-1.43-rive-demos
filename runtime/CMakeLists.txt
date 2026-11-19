@@ -1,0 +1,10 @@
+# A host application can add this directory directly and link rive_thorvg.
+cmake_minimum_required(VERSION 3.20)
+set(bridge "${CMAKE_CURRENT_LIST_DIR}/../vendor/rive-thorvg")
+if(NOT EXISTS "${bridge}/rive-runtime/include/rive/artboard.hpp")
+    message(FATAL_ERROR "Initialize the toolkit's recursive Git submodules to build the Rive renderer.")
+endif()
+set(BUILD_TESTING OFF)
+add_subdirectory("${bridge}" "${CMAKE_CURRENT_BINARY_DIR}/rive-thorvg" EXCLUDE_FROM_ALL)
+include(timeline.cmake)
+enable_rive_timelines(rive_thorvg)

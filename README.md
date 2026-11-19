@@ -1,6 +1,16 @@
-# Rive on a round AMOLED
+# Rive rendering and round AMOLED board support
 
-Build a working pocket watch for the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)** using artwork drawn in Rive. The toolkit also includes a software renderer for playing self-contained `.riv` files on the board and rendering them to images on a computer.
+Render a self-contained `.riv` into a framebuffer from C or C++ on ESP32-S3 or desktop. A separate ESP-IDF component drives the display, touch controller and accelerometer on the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)**. An application can use either component on its own or connect the two.
+
+| Building block | What you can use in your project |
+| --- | --- |
+| [Rive renderer](runtime/README.md) | Load bytes from flash or storage, advance a timeline or state machine, send input and read back pixels. Link it as an ESP-IDF component or a desktop CMake library. |
+| [Waveshare board support](#reuse-the-board-code) | Draw RGB565 patches, transfer changed regions of an ARGB framebuffer, stream scanlines, and read touch or acceleration. |
+| [Desktop rendering tool](#render-a-file-on-your-computer) | Render an artboard at a chosen time and size to a PPM image or raw RGB565 file. |
+
+Rive’s C++ runtime evaluates the artwork and ThorVG rasterizes it. The pinned upstream `rive-thorvg` bridge supplies the C API. This toolkit adds timeline playback, packages the renderer for applications, and connects it to the round display. [Upstream projects and credits](THIRD_PARTY.md)
+
+## Examples
 
 ![Open pocket watch showing ten past ten, thermostat at 72 degrees and brass VU meter](docs/rendering-examples.png)
 
@@ -35,7 +45,7 @@ The default viewport is 233 × 233. A named artboard is optional. The player cen
 
 Use self-contained files with embedded assets. The embedded backend uses outlined lettering, leaves live text unrendered and omits audio and scripting. Transparent pixels composite against black on the panel and in the host output.
 
-## Build the firmware
+## Run the board examples
 
 Activate an ESP-IDF **5.3.2** environment for ESP32-S3. The examples configure a 466 × 466 QSPI panel, octal PSRAM and a 16 MiB flash layout. From the toolkit root, install the board support and flash the standalone clock. Replace `PORT` with the board’s serial port. Flashing installs the example and its partition table. Use Ctrl+] to leave the monitor.
 
@@ -74,7 +84,14 @@ Use `examples/thermostat`, `examples/baked-meter` or `examples/tilt-water` in th
 
 ## Reuse the board code
 
-The [board component](board/) contains the display and sensor APIs. Use `firmware/board.cmake` and an example project’s top-level CMake file as a reference when adding it to another ESP-IDF project. The PSRAM and partition defaults are in [firmware](firmware/).
+Run `python3 tools/setup-board.py` from the toolkit checkout to fetch the vendor driver files. In an existing ESP-IDF project, include the [board registration file](board/esp-idf.cmake) before ESP-IDF’s project file. Adjust the toolkit path to your checkout.
+
+```cmake
+include("${CMAKE_CURRENT_LIST_DIR}/third_party/rive-round-amoled/board/esp-idf.cmake")
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+```
+
+Add `board` to your component’s `PRIV_REQUIRES`. Your project supplies its own target, partition table and PSRAM configuration. The [firmware defaults](firmware/sdkconfig.defaults) show the settings used by the examples.
 
 - **Panel.** Initialize it once and draw from one task. `display_frame_region` takes a rectangle inside a full 233 × 233 premultiplied ARGB8888 frame. It rotates the image clockwise, doubles each pixel and converts it to RGB565. `display_rgb565_region` takes a tightly packed native-resolution patch in upright artwork coordinates. [Display API](board/display.h)
 - **Streaming.** For procedural images, `display_scanlines` and `display_parallel_rows` take physical panel coordinates and expect RGB565 in wire byte order. The latter splits a tile across the two cores and overlaps painting with the preceding transfer. [Water shader](examples/tilt-water/main/water.c)

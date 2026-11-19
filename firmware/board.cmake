@@ -1,10 +1,6 @@
 # Shared by the ESP-IDF projects under examples/.
 get_filename_component(TOOLKIT_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
-set(WAVESHARE "${TOOLKIT_ROOT}/vendor/waveshare")
-if(NOT EXISTS "${WAVESHARE}/panel_init.h")
-    message(FATAL_ERROR "Run python3 tools/setup-board.py from the toolkit root first.")
-endif()
 set(IDF_TARGET esp32s3)
 set(SDKCONFIG_DEFAULTS "${CMAKE_CURRENT_LIST_DIR}/sdkconfig.defaults")
-set(EXTRA_COMPONENT_DIRS "${TOOLKIT_ROOT}/board" "${WAVESHARE}/read_lcd_id_bsp" "${WAVESHARE}/i2c_bsp")
+include("${TOOLKIT_ROOT}/board/esp-idf.cmake")
 set(COMPONENTS main)
