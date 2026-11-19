@@ -1,0 +1,61 @@
+--- rive_thorvg.cpp
++++ rive_thorvg.cpp
+@@ -105,6 +105,8 @@
+     rive::rcp<rive::File> file;
+     std::unique_ptr<rive::ArtboardInstance> artboard;
+     std::unique_ptr<rive::StateMachineInstance> stateMachine;
++
++    std::unique_ptr<rive::Scene> timeline;
+ 
+     // ViewModel runtime (for data binding)
+     rive::rcp<rive::ViewModelInstanceRuntime> vmRuntime;
+@@ -292,6 +294,8 @@
+         assetLoader = bridgeLoader.get();
+     }
+ 
++    ctx->timeline.reset();
++
+     // Parse the .riv file
+     rive::ImportResult importResult;
+     ctx->file = rive::File::import(
+@@ -320,6 +324,9 @@
+         if (!ctx->stateMachine && ctx->artboard->stateMachineCount() > 0) {
+             ctx->stateMachine = ctx->artboard->stateMachineAt(0);
+         }
++        if (!ctx->stateMachine) {
++            ctx->timeline = ctx->artboard->defaultScene();
++        }
+     }
+ 
+     // Bind ViewModel AFTER creating state machine — binding to the SM
+@@ -327,11 +334,7 @@
+     rive_bind_default_viewmodel(ctx);
+ 
+     // Initial advance to compute transforms, opacity, etc.
+-    if (ctx->stateMachine) {
+-        ctx->stateMachine->advanceAndApply(0.0f);
+-    } else {
+-        ctx->artboard->advance(0.0f);
+-    }
++    rive_advance_state(ctx, 0.0f);
+ 
+     ctx->dirty = true;
+ 
+@@ -344,6 +347,7 @@
+     // Release Rive objects in reverse order
+     ctx->vmRuntime = nullptr;
+     ctx->stateMachine.reset();
++    ctx->timeline.reset();
+     ctx->artboard.reset();
+     ctx->file.reset();
+ 
+@@ -389,6 +393,9 @@
+ 
+     if (ctx->stateMachine) {
+         bool changed = ctx->stateMachine->advanceAndApply(elapsed_seconds);
++        ctx->dirty = ctx->dirty || changed;
++    } else if (ctx->timeline) {
++        bool changed = ctx->timeline->advanceAndApply(elapsed_seconds);
+         ctx->dirty = ctx->dirty || changed;
+     } else if (ctx->artboard) {
+         bool changed = ctx->artboard->advance(elapsed_seconds);

@@ -1,0 +1,10 @@
+// Wheel name, dial center, tooth count, driver index, center on the parts tray.
+WHEEL("Great wheel",    164, 228, 24, -1,  73,  79)
+WHEEL("Center wheel",   268, 150, 28,  0, 226,  79)
+WHEEL("Escape pinion",  334, 238, 16,  1, 360,  79)
+WHEEL("Fourth wheel",   280, 310, 20,  2,  66, 231)
+WHEEL("Winding pinion", 164, 323, 14,  0, 179, 230)
+// Hand name, tray pivot, half-width, distances above and below its pivot.
+HAND("Hour hand",   290, 387, 14, 121, 20)
+HAND("Minute hand", 330, 387, 11, 170, 20)
+HAND("Sweep hand",  376, 387, 11, 201, 47)

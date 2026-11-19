@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+build/
+build-*/
+sdkconfig
+sdkconfig.old
+managed_components/
+vendor/waveshare/
+*.ppm
+*.pyc

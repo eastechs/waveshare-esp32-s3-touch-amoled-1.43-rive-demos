@@ -1,0 +1,2 @@
+#pragma once
+#define RIV_ARTBOARD "@board_name@"

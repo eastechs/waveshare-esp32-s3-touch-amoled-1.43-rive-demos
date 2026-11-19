@@ -1,0 +1,3 @@
+[submodule "vendor/rive-thorvg"]
+	path = vendor/rive-thorvg
+	url = https://github.com/xseignard/rive-thorvg.git

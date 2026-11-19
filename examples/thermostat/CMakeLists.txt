@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.20)
+include(../../firmware/board.cmake)
+list(APPEND EXTRA_COMPONENT_DIRS "${TOOLKIT_ROOT}/vendor/rive-thorvg/examples/esp32_direct/components/rive_thorvg")
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(thermostat)
+include(../../runtime/timeline.cmake)
+idf_component_get_property(bridge rive_thorvg COMPONENT_LIB)
+enable_rive_timelines(${bridge})

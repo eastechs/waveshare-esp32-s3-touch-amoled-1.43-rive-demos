@@ -1,0 +1,5 @@
+*.riv binary
+*.rgb565 binary
+*.glass binary
+# Unified diffs represent empty context lines with one space.
+*.patch whitespace=-blank-at-eol
