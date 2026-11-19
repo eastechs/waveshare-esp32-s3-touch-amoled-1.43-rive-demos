@@ -1,4 +1,4 @@
-idf_component_register(SRCS "main.c" "changed_frame.c" PRIV_REQUIRES board rive_thorvg esp_timer)
+idf_component_register(SRCS "main.c" PRIV_REQUIRES board rive_thorvg esp_timer)
 # Ignore the IDF dependency discovery pass, which runs in CMake script mode.
 if(NOT CMAKE_SCRIPT_MODE_FILE)
     set(RIV_FILE "" CACHE FILEPATH "A .riv file to embed in place of the pocket watch")

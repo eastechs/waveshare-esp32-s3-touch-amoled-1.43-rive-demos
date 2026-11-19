@@ -19,12 +19,12 @@ int main(void)
 {
     int last = RENDER_SIZE*RENDER_SIZE-1;
     source[0] = source[last] = 0xff224466;
-    display_changes(previous, source);
+    assert(display_changes(previous, source));
     assert(calls == 2 && memcmp(panel, source, sizeof(panel)) == 0);
-    display_changes(previous, source);
+    assert(!display_changes(previous, source));
     assert(calls == 2);
     source[last] = 0;
     source[last-1] = 0xff224466;
-    display_changes(previous, source);
+    assert(display_changes(previous, source));
     assert(calls == 3 && memcmp(panel, source, sizeof(panel)) == 0);
 }

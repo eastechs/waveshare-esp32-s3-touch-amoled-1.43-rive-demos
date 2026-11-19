@@ -1,19 +1,20 @@
 # Rive on a round AMOLED
 
-Render a `.riv` file on a computer or play it on the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)**. The same software renderer drives both. The board examples also show how to trade flash space for faster drawing and how to drive the panel directly from an accelerometer.
+Build a working pocket watch for the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)** using artwork drawn in Rive. The toolkit also includes a software renderer for playing self-contained `.riv` files on the board and rendering them to images on a computer.
 
-![Pocket watch movement, thermostat at 72 degrees and brass VU meter](docs/rendering-examples.png)
+![Open pocket watch showing ten past ten, thermostat at 72 degrees and brass VU meter](docs/rendering-examples.png)
 
 | Example | What it does |
 | --- | --- |
-| [Rive player](examples/rive-player/main/main.c) | Plays the pocket watch’s wheel train or your own embedded `.riv`. Forwards touch to the artboard and transfers only changed regions after the first frame. |
+| [Pocket watch](examples/pocket-watch/main/main.c) | Tells time from the board clock. The seconds hand sweeps, five gears drive a crank, and a tap opens or closes the tilt-lit brass cover. |
+| [Rive player](examples/rive-player/main/main.c) | Plays your embedded `.riv`. The bundled `Movement` artboard animates the gear train and has fixed hand positions. Forwards touch to the artboard and transfers only changed regions after the first frame. |
 | [Thermostat](examples/thermostat/main/main.c) | Touch the rim to change the setpoint. At startup the firmware renders the Rive view model at each setting, then releases the runtime. A drag blends two cached landscapes and draws the selected indicators. |
 | [Baked VU meter](examples/baked-meter/main/main.c) | Replays an eight-second Rive animation at native panel resolution. Firmware restores the old needle pixels and applies the current pose from flash. |
 | [Tilt water](examples/tilt-water/main/main.c) | Tilt the board and the water follows gravity. Two cores shade alternating groups of rows directly into the display’s DMA buffers. |
 
 ## Render a file on your computer
 
-From the repository root, use Git, CMake 3.20 or later, a C11/C++17 toolchain, the Unix `patch` utility and Python 3 for the tests. The renderer builds on macOS with Apple Clang. A board, ESP-IDF and the Rive authoring CLI are optional for this workflow.
+From the repository root, use Git, CMake 3.20 or later, a C11/C++17 toolchain, the Unix `patch` utility, Python 3 and zlib development headers for the tests. The renderer builds on macOS with Apple Clang. A board, ESP-IDF and the Rive authoring CLI are optional for this workflow.
 
 ```sh
 git submodule update --init --recursive --depth 1
@@ -36,15 +37,26 @@ Use self-contained files with embedded assets. The embedded backend uses outline
 
 ## Build the firmware
 
-Activate an ESP-IDF **5.3.2** environment for ESP32-S3. The examples configure a 466 × 466 QSPI panel, octal PSRAM and a 16 MiB flash layout. From the toolkit root, fetch the board support and build the player.
+Activate an ESP-IDF **5.3.2** environment for ESP32-S3. The examples configure a 466 × 466 QSPI panel, octal PSRAM and a 16 MiB flash layout. From the toolkit root, install the board support and flash the standalone clock. Replace `PORT` with the board’s serial port. Flashing installs the example and its partition table. Use Ctrl+] to leave the monitor.
+
+```sh
+python3 tools/setup-board.py
+idf.py -C examples/pocket-watch -p PORT flash monitor
+```
+
+The watch opens its lid on boot. Tap to close or reopen it. Tilt the closed lid to move the brass reflection. At startup the firmware reads the PCF85063 clock and logs the time source. If the RTC needs initialization, it seeds it from the firmware build time. When the RTC is unavailable, it advances from build time using the ESP timer.
+
+The dial, lid, gears and hands come from three cached Rive artboards. The firmware rotates each hand to its angle for the current time, animates the wheel train and sends rectangles containing changed pixels to the display. On one ESP32-S3 board the open clock measured 25.0 FPS (126 completed updates in 5.04 seconds). On the same board, playing the entire vector `Movement` artboard measured 5.4 FPS, with 161 ms per changed frame spent rasterizing. Both measurements use a 233 × 233 framebuffer on the 466 × 466 panel. [Watch renderer](examples/pocket-watch/main/watch.c)
+
+The setup script checks the Waveshare V3 ZIP against its SHA-256 digest before installing the required files. If you already have the ZIP, pass its path to `tools/setup-board.py`. ESP-IDF resolves the pinned Espressif components during configuration.
+
+### Play a .riv file on the board
+
+The live player and thermostat also need the renderer submodules.
 
 ```sh
 git submodule update --init --recursive --depth 1
-python3 tools/setup-board.py
-idf.py -C examples/rive-player build
 ```
-
-The setup script checks the Waveshare V3 ZIP against its SHA-256 digest before installing the required files. If you already have the ZIP, pass its path to `tools/setup-board.py`. ESP-IDF resolves the pinned Espressif components during configuration.
 
 To play your own file, supply its absolute path. Omit `RIV_ARTBOARD` on a fresh build to use the file’s default artboard, or set it to a name. The bundled watch uses `Movement`.
 
@@ -52,13 +64,13 @@ To play your own file, supply its absolute path. Omit `RIV_ARTBOARD` on a fresh 
 idf.py -C examples/rive-player -DRIV_FILE="/absolute/path/to/your.riv" -DRIV_ARTBOARD="" build
 ```
 
-ESP-IDF caches those settings. To return to the watch, build with `-DRIV_FILE="" -DRIV_ARTBOARD=""`. To run a built example on hardware, replace `PORT` with the board’s serial port. Flashing installs the example firmware and partition table. Use Ctrl+] to leave the monitor.
+ESP-IDF caches those settings. To return to the bundled gear animation, build with `-DRIV_FILE="" -DRIV_ARTBOARD=""`. Flash the player with the same port used above.
 
 ```sh
 idf.py -C examples/rive-player -p PORT flash monitor
 ```
 
-Use `examples/thermostat`, `examples/baked-meter` or `examples/tilt-water` in the same commands to build and flash those projects. The meter and water projects build with just ESP-IDF and the Waveshare setup. Run `tools/build-firmware` to compile all four projects in one pass.
+Use `examples/thermostat`, `examples/baked-meter` or `examples/tilt-water` in the same commands to build and flash those projects. The pocket watch, meter and water projects build with just ESP-IDF and the Waveshare setup. Run `tools/build-firmware` to compile all five projects.
 
 ## Reuse the board code
 
@@ -81,7 +93,9 @@ python3 tools/build_vu_meter_art.py
 python3 tools/build_water_art.py
 ```
 
-After changing the watch or thermostat RML, use the Rive CLI’s local export to replace its adjacent `.riv`. Local export requires a signed-in Rive CLI. For the VU meter, the bake tool uses the CLI’s headless capture mode and FFmpeg to convert the frames to RGB565 patches.
+The standalone clock’s [Rive project](assets/pocket-watch/scene.rml) holds the dial, hunter cover and a 466 × 466 tray of movable parts. After editing those artboards, run `python3 tools/bake_watch.py --rive rive` with the Rive CLI and FFmpeg installed. This recreates the three compressed ARGB layers embedded in the firmware. The [part definitions](assets/watch/parts.def) give the tray pivots, hand lengths and wheel gearing.
+
+After changing the live player’s watch or thermostat RML, use the Rive CLI’s local export to replace its adjacent `.riv`. Local export requires a signed-in Rive CLI. For the VU meter, the bake tool uses the CLI’s headless capture mode and FFmpeg to convert the frames to RGB565 patches.
 
 ```sh
 rive assets/watch --publish=local --output-dir=.
@@ -93,7 +107,7 @@ The meter bake was verified with Rive CLI 1.9.2.
 
 The VU file contains a base frame, a little-endian table of 201 byte offsets and 200 sets of pixel replacements. Each replacement stores a 16-bit position in the needle rectangle and a 16-bit color. Every pose refers to the base frame so playback can skip directly to the current time. [Encoder](tools/bake_meter.py) · [Decoder](examples/baked-meter/main/vu_meter.c)
 
-To run just the board logic tests, configure a separate host build with `-DWITH_RIVE=OFF`. Those tests exercise the water simulation, RGB565 display patches, changed-frame transfers and shake detection without downloading the renderer.
+To run just the board logic tests, configure a separate host build with `-DWITH_RIVE=OFF`. Those tests exercise the watch hands and mechanism, water simulation, RGB565 display patches, changed-frame transfers and shake detection without downloading the renderer.
 
 ## License
 

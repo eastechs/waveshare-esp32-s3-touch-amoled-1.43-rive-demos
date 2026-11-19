@@ -3,7 +3,7 @@
 #include <string.h>
 
 // Group adjacent changed columns so an isolated moving feature costs one rectangle.
-void display_changes(uint32_t *previous, const uint32_t *frame)
+bool display_changes(uint32_t *previous, const uint32_t *frame)
 {
     uint8_t top[RENDER_SIZE], bottom[RENDER_SIZE] = {0};
     _Static_assert(RENDER_SIZE <= UINT8_MAX, "column extents must fit in one byte");
@@ -17,6 +17,7 @@ void display_changes(uint32_t *previous, const uint32_t *frame)
             previous[i] = frame[i];
         }
     }
+    bool transferred = false;
     for (int x = 0; x < RENDER_SIZE;) {
         if (!bottom[x]) { ++x; continue; }
         int start = x, y0 = top[x], y1 = bottom[x];
@@ -25,6 +26,8 @@ void display_changes(uint32_t *previous, const uint32_t *frame)
             if (bottom[x] > y1) y1 = bottom[x];
             ++x;
         } while (x < RENDER_SIZE && bottom[x]);
+        transferred = true;
         display_frame_region(frame, start, y0, x-start, y1-y0);
     }
+    return transferred;
 }

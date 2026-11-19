@@ -56,10 +56,31 @@ void app_main(void)
     memcpy(previous, pixels, bytes);
 
     int64_t last = esp_timer_get_time();
+    int64_t sample_start = last;
+    int64_t raster_us = 0, present_us = 0;
+    unsigned frames = 0;
     for (;;) {
         int64_t start = esp_timer_get_time();
         forward_touch(rive);
-        if (rive_advance(rive, (start-last) / 1000000.0f)) display_changes(previous, pixels);
+        int64_t render_start = esp_timer_get_time();
+        bool updated = rive_advance(rive, (start-last) / 1000000.0f);
+        int64_t rendered = esp_timer_get_time();
+        if (updated) {
+            bool transferred = display_changes(previous, pixels);
+            if (sample_start && transferred) {
+                ++frames;
+                raster_us += rendered - render_start;
+                present_us += esp_timer_get_time() - rendered;
+            }
+        }
+        if (sample_start && start - sample_start >= 5000000) {
+            double seconds = (esp_timer_get_time() - sample_start) / 1e6;
+            ESP_LOGI("player", "%u changed frames in %.2f s (%.1f FPS), mean raster %.1f ms, panel update %.1f ms",
+                     frames, seconds, frames / seconds,
+                     frames ? raster_us / (1000.0 * frames) : 0,
+                     frames ? present_us / (1000.0 * frames) : 0);
+            sample_start = 0;
+        }
         last = start;
         int remaining_ms = (33333 - (esp_timer_get_time()-start)) / 1000;
         vTaskDelay(pdMS_TO_TICKS(remaining_ms > 0 ? remaining_ms : 1));
