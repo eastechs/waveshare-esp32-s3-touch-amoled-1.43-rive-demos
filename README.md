@@ -6,15 +6,15 @@ The demos pin two independent packages as Git submodules. **rive-thorvg-framebuf
 
 ## Examples
 
-![Open pocket watch showing ten past ten, thermostat at 72 degrees and brass VU meter](docs/rendering-examples.png)
+These previews were rendered on a computer with the demo artwork and drawing code. The clock time, thermostat setpoint and board tilt are simulated.
 
-| Example | What it does |
+| Preview | Firmware example |
 | --- | --- |
-| [Pocket watch](examples/pocket-watch/main/main.c) | Tells time from the board clock. The seconds hand sweeps, five gears drive a crank, and a tap opens or closes the tilt-lit brass cover. |
-| [Rive player](examples/rive-player/main/main.c) | Plays your embedded `.riv`. The bundled `Movement` artboard animates the gear train and has fixed hand positions. Forwards touch to the artboard and transfers only changed regions after the first frame. |
-| [Thermostat](examples/thermostat/main/main.c) | Touch the rim to change the setpoint. At startup the firmware renders the Rive view model at each setting, then releases the runtime. A drag blends two cached landscapes and draws the selected indicators. |
-| [Baked VU meter](examples/baked-meter/main/main.c) | Replays an eight-second Rive animation at native panel resolution. Firmware restores the old needle pixels and applies the current pose from flash. |
-| [Tilt water](examples/tilt-water/main/main.c) | Tilt the board and the water follows gravity. Two cores shade alternating groups of rows directly into the display’s DMA buffers. |
+| ![Brass cover opens onto a clock with moving gears and a sweeping seconds hand, then closes.](docs/previews/pocket-watch.gif) | **[Pocket watch](examples/pocket-watch/main/main.c)**<br>Tells time from the board clock. The seconds hand sweeps, five gears drive a crank, and a tap opens or closes the tilt-lit brass cover. |
+| ![Five gears turn behind fixed hands on the bundled Movement artboard.](docs/previews/rive-player.gif) | **[Rive player](examples/rive-player/main/main.c)**<br>Plays your embedded `.riv`. The bundled `Movement` artboard animates the gear train and has fixed hand positions. Forwards touch to the artboard and transfers only changed regions after the first frame. |
+| ![The setpoint moves from 72°F to 84°F, down to 60°F and back as the landscape changes color.](docs/previews/thermostat.gif) | **[Thermostat](examples/thermostat/main/main.c)**<br>Touch the rim to change the setpoint. At startup the firmware renders the Rive view model at each setting, then releases the runtime. A drag blends two cached landscapes and draws the selected indicators. |
+| ![A brass VU meter needle swings across the scale and returns to rest.](docs/previews/baked-meter.gif) | **[Baked VU meter](examples/baked-meter/main/main.c)**<br>Replays an eight-second Rive animation at native panel resolution. Firmware restores the old needle pixels and applies the current pose from flash. |
+| ![Water sloshes to either side, fills the view as the display tilts face-up, then settles level.](docs/previews/tilt-water.gif) | **[Tilt water](examples/tilt-water/main/main.c)**<br>Tilt the board and the water follows gravity. Two cores shade alternating groups of rows directly into the display’s DMA buffers. |
 
 ## Run the board examples
 
