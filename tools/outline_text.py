@@ -7,7 +7,7 @@ from fontTools.ttLib import TTFont
 
 from rive_art import ROOT, add, fill
 
-FONT = ROOT / "deps/rive-framebuffer/vendor/rive-thorvg/rive-runtime/tests/unit_tests/assets/fonts/Inter_18pt-Regular.ttf"
+FONT = ROOT / "deps/rive-thorvg-framebuffer/vendor/rive-thorvg/rive-runtime/tests/unit_tests/assets/fonts/Inter_18pt-Regular.ttf"
 
 
 class RivePath(BasePen):

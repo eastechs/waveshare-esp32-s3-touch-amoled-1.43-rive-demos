@@ -1,8 +1,8 @@
-# Rive demos for a round AMOLED
+# Rive demos for the Waveshare ESP32-S3-Touch-AMOLED-1.43
 
 Five working firmware examples for the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)**. Flash the pocket watch to see an RTC-driven instrument, or use the live player to try your own `.riv` file. The other examples show how cached Rive graphics and procedural drawing perform on the same panel.
 
-The demos pin two independent packages as Git submodules. **rive-framebuffer** loads and renders Rive files. **waveshare-round-amoled** drives the display, touch controller and accelerometer. The standalone **riv-render** desktop tool is distributed in its own repository. [Renderer](deps/rive-framebuffer) · [Board drivers](deps/waveshare-round-amoled)
+The demos pin two independent packages as Git submodules. **rive-thorvg-framebuffer** loads and renders Rive files. **waveshare-esp32-s3-touch-amoled-1.43-bsp** drives the display, touch controller and accelerometer. The standalone **rive-thorvg-snapshot-cli** desktop tool is distributed in its own repository. [Renderer](deps/rive-thorvg-framebuffer) · [Board drivers](deps/waveshare-esp32-s3-touch-amoled-1.43-bsp)
 
 ## Examples
 
@@ -23,8 +23,8 @@ The first-party submodule URLs resolve to sibling repositories on the same Git h
 Activate an ESP-IDF **5.3.2** environment for ESP32-S3. The examples configure a 466 × 466 QSPI panel, octal PSRAM and a 16 MiB flash layout. From the demo checkout, initialize the board dependency and install its vendor files and flash the standalone clock. Replace `PORT` with the board’s serial port. Flashing installs the example and its partition table. Use Ctrl+] to leave the monitor.
 
 ```sh
-git submodule update --init deps/waveshare-round-amoled
-python3 deps/waveshare-round-amoled/tools/setup-board.py
+git submodule update --init deps/waveshare-esp32-s3-touch-amoled-1.43-bsp
+python3 deps/waveshare-esp32-s3-touch-amoled-1.43-bsp/tools/setup-board.py
 idf.py -C examples/pocket-watch -p PORT flash monitor
 ```
 
@@ -32,14 +32,14 @@ The watch opens its lid on boot. Tap to close or reopen it. Tilt the closed lid 
 
 The dial, lid, gears and hands come from three cached Rive artboards. The firmware rotates each hand to its angle for the current time, animates the wheel train and sends rectangles containing changed pixels to the display. On one ESP32-S3 board the open clock measured 25.0 FPS (126 completed updates in 5.04 seconds). On the same board, playing the entire vector `Movement` artboard measured 5.4 FPS, with 161 ms per changed frame spent rasterizing. Both measurements use a 233 × 233 framebuffer on the 466 × 466 panel. [Watch renderer](examples/pocket-watch/main/watch.c)
 
-The setup script checks the Waveshare V3 ZIP against its SHA-256 digest before installing the required files. If you already have the ZIP, pass its path to `deps/waveshare-round-amoled/tools/setup-board.py`. ESP-IDF resolves the pinned Espressif components during configuration.
+The setup script checks the Waveshare V3 ZIP against its SHA-256 digest before installing the required files. If you already have the ZIP, pass its path to `deps/waveshare-esp32-s3-touch-amoled-1.43-bsp/tools/setup-board.py`. ESP-IDF resolves the pinned Espressif components during configuration.
 
 ### Play a .riv file on the board
 
 The live player and thermostat also need the renderer submodules.
 
 ```sh
-git submodule update --init --recursive deps/rive-framebuffer
+git submodule update --init --recursive deps/rive-thorvg-framebuffer
 ```
 
 To play your own file, supply its absolute path. Omit `RIV_ARTBOARD` on a fresh build to use the file’s default artboard, or set it to a name. The bundled watch uses `Movement`.

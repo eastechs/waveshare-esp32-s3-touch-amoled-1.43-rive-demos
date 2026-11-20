@@ -1,6 +1,6 @@
-[submodule "deps/rive-framebuffer"]
-	path = deps/rive-framebuffer
-	url = ../rive-framebuffer
-[submodule "deps/waveshare-round-amoled"]
-	path = deps/waveshare-round-amoled
-	url = ../waveshare-round-amoled
+[submodule "deps/rive-thorvg-framebuffer"]
+	path = deps/rive-thorvg-framebuffer
+	url = ../rive-thorvg-framebuffer
+[submodule "deps/waveshare-esp32-s3-touch-amoled-1.43-bsp"]
+	path = deps/waveshare-esp32-s3-touch-amoled-1.43-bsp
+	url = ../waveshare-esp32-s3-touch-amoled-1.43-bsp
