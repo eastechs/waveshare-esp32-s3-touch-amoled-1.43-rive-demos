@@ -1,8 +1,16 @@
 # Rive demos for the Waveshare ESP32-S3-Touch-AMOLED-1.43
 
-Five working firmware examples for the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)**. Flash the pocket watch to see an RTC-driven instrument, or use the live player to try your own `.riv` file. The other examples show how cached Rive graphics and procedural drawing perform on the same panel.
+A live `.riv` player and four firmware examples for the **Waveshare ESP32-S3-Touch-AMOLED-1.43 (non-C)**. The examples include an RTC-driven pocket watch and show how cached Rive graphics and procedural drawing perform on the same panel.
 
 The demos pin two independent packages as Git submodules. **rive-thorvg-framebuffer** loads and renders Rive files. **waveshare-esp32-s3-touch-amoled-1.43-bsp** drives the display, touch controller and accelerometer. The standalone **rive-thorvg-snapshot-cli** desktop tool is distributed in its own repository. [Renderer](deps/rive-thorvg-framebuffer) · [Board drivers](deps/waveshare-esp32-s3-touch-amoled-1.43-bsp)
+
+## Rive player
+
+The [Rive player](examples/rive-player/main/main.c) runs an embedded `.riv` file on the board and forwards touch input to its artboard. After the first frame, it sends only changed regions to the display. [Play your own file](#play-a-riv-file-on-the-board).
+
+In this desktop preview of the bundled `Movement` artboard, the gears turn and the hands stay fixed.
+
+![Five gears turn behind fixed hands on the bundled Movement artboard.](docs/previews/rive-player.gif)
 
 ## Examples
 
@@ -10,11 +18,10 @@ These previews were rendered on a computer with the demo artwork and drawing cod
 
 | Preview | Firmware example |
 | --- | --- |
-| ![Brass cover opens onto a clock with moving gears and a sweeping seconds hand, then closes.](docs/previews/pocket-watch.gif) | **[Pocket watch](examples/pocket-watch/main/main.c)**<br>Tells time from the board clock. The seconds hand sweeps, five gears drive a crank, and a tap opens or closes the tilt-lit brass cover. |
-| ![Five gears turn behind fixed hands on the bundled Movement artboard.](docs/previews/rive-player.gif) | **[Rive player](examples/rive-player/main/main.c)**<br>Plays your embedded `.riv`. The bundled `Movement` artboard animates the gear train and has fixed hand positions. Forwards touch to the artboard and transfers only changed regions after the first frame. |
-| ![The setpoint moves from 72°F to 84°F, down to 60°F and back as the landscape changes color.](docs/previews/thermostat.gif) | **[Thermostat](examples/thermostat/main/main.c)**<br>Touch the rim to change the setpoint. At startup the firmware renders the Rive view model at each setting, then releases the runtime. A drag blends two cached landscapes and draws the selected indicators. |
-| ![A brass VU meter needle swings across the scale and returns to rest.](docs/previews/baked-meter.gif) | **[Baked VU meter](examples/baked-meter/main/main.c)**<br>Replays an eight-second Rive animation at native panel resolution. Firmware restores the old needle pixels and applies the current pose from flash. |
-| ![Water sloshes to either side, fills the view as the display tilts face-up, then settles level.](docs/previews/tilt-water.gif) | **[Tilt water](examples/tilt-water/main/main.c)**<br>Tilt the board and the water follows gravity. Two cores shade alternating groups of rows directly into the display’s DMA buffers. |
+| ![Brass cover opens onto a clock with moving gears and a sweeping seconds hand, then closes.](docs/previews/pocket-watch.gif) | The **[pocket watch](examples/pocket-watch/main/main.c)** tells time from the board clock. The seconds hand sweeps, five gears drive a crank, and a tap opens or closes the tilt-lit brass cover. |
+| ![The setpoint moves from 72°F to 84°F, down to 60°F and back as the landscape changes color.](docs/previews/thermostat.gif) | Touch the rim of the **[thermostat](examples/thermostat/main/main.c)** to change the setpoint. At startup the firmware renders the Rive view model at each setting, then releases the runtime. A drag blends two cached landscapes and draws the selected indicators. |
+| ![A brass VU meter needle swings across the scale and returns to rest.](docs/previews/baked-meter.gif) | The **[baked VU meter](examples/baked-meter/main/main.c)** replays an eight-second Rive animation at native panel resolution. Firmware restores the old needle pixels and applies the current pose from flash. |
+| ![Water sloshes to either side, fills the view as the display tilts face-up, then settles level.](docs/previews/tilt-water.gif) | In **[Tilt water](examples/tilt-water/main/main.c)**, the water follows gravity as you tilt the board. Two cores shade alternating groups of rows directly into the display’s DMA buffers. |
 
 ## Run the board examples
 
