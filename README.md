@@ -18,6 +18,8 @@ The demos pin two independent packages as Git submodules. **rive-framebuffer** l
 
 ## Run the board examples
 
+The first-party submodule URLs resolve to sibling repositories on the same Git host. When cloning from trusted local directories, use `git -c protocol.file.allow=always submodule update --init --recursive` to initialize them.
+
 Activate an ESP-IDF **5.3.2** environment for ESP32-S3. The examples configure a 466 × 466 QSPI panel, octal PSRAM and a 16 MiB flash layout. From the demo checkout, initialize the board dependency and install its vendor files and flash the standalone clock. Replace `PORT` with the board’s serial port. Flashing installs the example and its partition table. Use Ctrl+] to leave the monitor.
 
 ```sh
