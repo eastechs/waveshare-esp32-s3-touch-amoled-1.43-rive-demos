@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 include(../../firmware/board.cmake)
-list(APPEND EXTRA_COMPONENT_DIRS "${TOOLKIT_ROOT}/runtime/esp-idf/rive_thorvg")
+list(APPEND EXTRA_COMPONENT_DIRS "${TOOLKIT_ROOT}/deps/rive-framebuffer/esp-idf/rive_thorvg")
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(thermostat)

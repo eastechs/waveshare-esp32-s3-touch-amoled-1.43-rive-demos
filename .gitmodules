@@ -1,3 +1,6 @@
-[submodule "vendor/rive-thorvg"]
-	path = vendor/rive-thorvg
-	url = https://github.com/xseignard/rive-thorvg.git
+[submodule "deps/rive-framebuffer"]
+	path = deps/rive-framebuffer
+	url = ../rive-framebuffer
+[submodule "deps/waveshare-round-amoled"]
+	path = deps/waveshare-round-amoled
+	url = ../waveshare-round-amoled
